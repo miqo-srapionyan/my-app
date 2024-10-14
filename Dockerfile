@@ -1,4 +1,4 @@
-# Step 1: Build the application
+# Step 1: Build stage
 FROM node:18-alpine AS builder
 
 # Set the working directory inside the container
@@ -16,14 +16,16 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Step 2: Run the application using a lightweight server
+# Stage 2: Runtime stage
 FROM node:18-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the built files from the previous stage
-COPY --from=builder /app ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./
 
 # Expose the Next.js default port
 EXPOSE 3000
